@@ -4,13 +4,13 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import zechs.drive.stream.R
 import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.data.model.Starred
 import zechs.drive.stream.databinding.ItemDriveFileBinding
 import zechs.drive.stream.databinding.ItemLoadingBinding
-import zechs.drive.stream.utils.GlideApp
 
 sealed class FilesViewHolder(
     binding: ViewBinding
@@ -68,7 +68,7 @@ sealed class FilesViewHolder(
 
                 val iconLink = item.iconLink128 ?: R.drawable.ic_my_drive_24
 
-                GlideApp.with(ivFileType)
+                Glide.with(ivFileType)
                     .load(iconLink)
                     .apply(RequestOptions().override(48, 48))
                     .into(ivFileType)
