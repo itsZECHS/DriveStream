@@ -1,5 +1,7 @@
 package zechs.drive.stream.ui.profile
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.AccountWithClient
 import zechs.drive.stream.databinding.FragmentProfileBinding
 import zechs.drive.stream.ui.BaseFragment
+import zechs.drive.stream.ui.add_account.DialogAddAccount
 import zechs.drive.stream.ui.profile.adapter.AccountsAdapter
 
 
@@ -58,8 +61,28 @@ class ProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProfileBinding.bind(view)
 
+        binding.btnAddAccount.setOnClickListener {
+            showNewAccountDialog()
+        }
+
         setupRecyclerView()
         setupAccountsObserver()
+    }
+
+    private fun showNewAccountDialog() {
+        val addDialog = DialogAddAccount(
+            requireContext(),
+            onNextClickListener = { name ->
+                // Go to next step with the name
+            }
+        )
+        addDialog.also {
+            it.show()
+            it.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+        }
     }
 
     private fun setupAccountsObserver() {
