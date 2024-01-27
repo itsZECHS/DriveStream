@@ -3,6 +3,7 @@ package zechs.drive.stream.ui.profile
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import zechs.drive.stream.R
 import zechs.drive.stream.data.model.AccountWithClient
 import zechs.drive.stream.databinding.FragmentProfileBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.add_account.DialogAddAccount
+import zechs.drive.stream.ui.profile.ProfileViewModel.AccountValidationState
 import zechs.drive.stream.ui.profile.adapter.AccountsAdapter
 
 
@@ -65,6 +69,7 @@ class ProfileFragment : BaseFragment() {
             showNewAccountDialog()
         }
 
+        newAccountObserver()
         setupRecyclerView()
         setupAccountsObserver()
     }
@@ -73,7 +78,7 @@ class ProfileFragment : BaseFragment() {
         val addDialog = DialogAddAccount(
             requireContext(),
             onNextClickListener = { name ->
-                // Go to next step with the name
+                viewModel.validateAccountName(name)
             }
         )
         addDialog.also {
@@ -90,6 +95,27 @@ class ProfileFragment : BaseFragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.accounts.collect { accounts ->
                     accountsAdapter.submitList(accounts)
+                }
+            }
+        }
+    }
+
+    private fun newAccountObserver() {
+        viewModel.accountName.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { validation ->
+                Log.d(TAG, "newAccountObserver: $validation")
+                when (validation) {
+                    AccountValidationState.Conflict -> {
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.account_already_exists),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is AccountValidationState.Valid -> {
+                        // Navigate to next step with the nickname
+                    }
                 }
             }
         }
