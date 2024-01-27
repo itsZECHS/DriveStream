@@ -74,4 +74,8 @@
     <string name="thank_you_for_supporting_the_app">Thank you for supporting the app!</string>
     <string name="profiles">Profiles</string>
     <string name="add_account">Add account</string>
+    <string name="new_account">New account</string>
+    <string name="account_nickname">Account nickname</string>
+    <string name="next">Next</string>
+    <string name="please_enter_a_nickname">Please enter a nickname</string>
 </resources>
