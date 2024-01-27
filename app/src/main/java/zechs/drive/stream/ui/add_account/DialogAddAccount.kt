@@ -12,7 +12,7 @@ import zechs.drive.stream.R
 class DialogAddAccount(
     context: Context,
     val onNextClickListener: (String) -> Unit
-) : Dialog(context) {
+) : Dialog(context, R.style.ThemeOverlay_Fade_MaterialAlertDialog) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
