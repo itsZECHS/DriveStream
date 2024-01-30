@@ -50,7 +50,21 @@ class ProfileFragment : BaseFragment() {
         PopupMenu(requireContext(), view).apply {
             inflate(R.menu.profile_menu)
             menu.findItem(R.id.action_set_as_default).isVisible = !account.isDefault
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem?.itemId) {
+                    R.id.action_set_as_default -> {
+                        handleSetDefault(account)
+                        return@setOnMenuItemClickListener true
+                    }
+                }
+                return@setOnMenuItemClickListener false
+            }
         }.also { it.show() }
+    }
+
+    private fun handleSetDefault(account: AccountWithClient) {
+        viewModel.markDefault(account)
+        findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
     }
 
     private fun switchAccount(account: AccountWithClient) {

@@ -83,10 +83,14 @@ class SessionManager @Inject constructor(
         return value
     }
 
-    suspend fun saveDefault(profile: String) {
+    suspend fun saveDefault(profile: String?) {
         val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
         sessionStore.edit { settings ->
-            settings[dataStoreKey] = profile
+            if (profile == null) {
+                settings.remove(dataStoreKey)
+            } else {
+                settings[dataStoreKey] = profile
+            }
         }
         Log.d(TAG, "saveDefault: $profile")
     }

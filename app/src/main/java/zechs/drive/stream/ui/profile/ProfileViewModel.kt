@@ -38,6 +38,10 @@ class ProfileViewModel @Inject constructor(
         sessionManager.saveAccessToken(account.getAccessTokenResponse())
     }
 
+    fun markDefault(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
+        sessionManager.saveDefault(account.name)
+    }
+
     sealed interface AccountValidationState {
         object Conflict : AccountValidationState
         data class Valid(val name: String) : AccountValidationState
