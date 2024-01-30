@@ -54,6 +54,13 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="zechs.drive.stream.ui.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="zechs.drive.stream.ui.profile.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_profile"/>
 
 </navigation>
