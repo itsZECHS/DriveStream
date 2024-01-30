@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -46,6 +47,10 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun showAccountMenu(view: View, account: AccountWithClient) {
+        PopupMenu(requireContext(), view).apply {
+            inflate(R.menu.profile_menu)
+            menu.findItem(R.id.action_set_as_default).isVisible = !account.isDefault
+        }.also { it.show() }
     }
 
     private fun switchAccount(account: AccountWithClient) {
