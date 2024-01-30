@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.local.AccountsDao
+import zechs.drive.stream.data.model.AccountWithClient
 import zechs.drive.stream.ui.profile.ProfileFragment.Companion.TAG
 import zechs.drive.stream.utils.Event
 import zechs.drive.stream.utils.SessionManager
@@ -30,6 +31,12 @@ class ProfileViewModel @Inject constructor(
                 account
             }
         }
+
+    fun selectAccount(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
+        sessionManager.saveClient(account.getDriveClient())
+        sessionManager.saveRefreshToken(account.refreshToken)
+        sessionManager.saveAccessToken(account.getAccessTokenResponse())
+    }
 
     sealed interface AccountValidationState {
         object Conflict : AccountValidationState

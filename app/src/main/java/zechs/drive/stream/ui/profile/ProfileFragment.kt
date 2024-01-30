@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -48,6 +49,8 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun switchAccount(account: AccountWithClient) {
+        viewModel.selectAccount(account)
+        findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
     }
 
     override fun onCreateView(
