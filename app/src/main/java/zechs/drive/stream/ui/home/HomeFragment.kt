@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
@@ -109,18 +108,8 @@ class HomeFragment : BaseFragment() {
     private fun setupToolbar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_logOut -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.log_out_dialog_title))
-                        .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-                            dialog.dismiss()
-                            Log.d(TAG, "Logging out...")
-                            viewModel.logOut()
-                        }
-                        .show()
+                R.id.action_account_switch -> {
+                    findNavController().navigateSafe(R.id.action_homeFragment_to_profileFragment)
                     return@setOnMenuItemClickListener true
                 }
 
