@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.local.AccountsDao
 import zechs.drive.stream.data.model.AccountWithClient
+import zechs.drive.stream.data.model.TokenRequestBody
+import zechs.drive.stream.data.remote.RevokeTokenApi
 import zechs.drive.stream.ui.profile.ProfileFragment.Companion.TAG
 import zechs.drive.stream.utils.Event
 import zechs.drive.stream.utils.SessionManager
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val sessionManager: SessionManager,
-    private val accountsManager: AccountsDao
+    private val accountsManager: AccountsDao,
+    private val revokeTokenApi: RevokeTokenApi
 ) : ViewModel() {
 
     val accounts = accountsManager
@@ -40,6 +43,24 @@ class ProfileViewModel @Inject constructor(
 
     fun markDefault(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
         sessionManager.saveDefault(account.name)
+    }
+
+    fun deleteAccount(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
+        if (account.isDefault) {
+            sessionManager.saveDefault(null)
+        }
+        if (account.refreshToken == sessionManager.fetchRefreshToken()) {
+            revokeTokenApi.revokeToken(TokenRequestBody(account.refreshToken))
+            val default = sessionManager.fetchDefault()
+            sessionManager.resetDataStore()
+            if (default != null) {
+                accountsManager.getAccount(default)
+                    ?.let { account ->
+                        selectAccount(account)
+                    }
+            }
+        }
+        accountsManager.deleteAccount(account.name)
     }
 
     sealed interface AccountValidationState {

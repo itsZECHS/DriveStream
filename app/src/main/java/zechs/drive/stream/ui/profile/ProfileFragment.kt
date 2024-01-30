@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
@@ -56,10 +57,29 @@ class ProfileFragment : BaseFragment() {
                         handleSetDefault(account)
                         return@setOnMenuItemClickListener true
                     }
+                    R.id.action_delete -> {
+                        handleDeleteAccount(account)
+                        return@setOnMenuItemClickListener true
+                    }
                 }
                 return@setOnMenuItemClickListener false
             }
         }.also { it.show() }
+    }
+
+    private fun handleDeleteAccount(account: AccountWithClient) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.confirm_delete_account_title))
+            .setMessage(getString(R.string.confirm_delete_account_warning))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                viewModel.deleteAccount(account)
+                dialog.dismiss()
+                Log.d(TAG, "Deleting account $account")
+            }
+            .show()
     }
 
     private fun handleSetDefault(account: AccountWithClient) {
