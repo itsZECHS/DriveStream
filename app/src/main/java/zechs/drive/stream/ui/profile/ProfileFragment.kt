@@ -74,8 +74,13 @@ class ProfileFragment : BaseFragment() {
             .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
             }
+            .setNeutralButton(getString(R.string.just_delete)) { dialog, _ ->
+                viewModel.deleteAccount(account, revoke = false)
+                dialog.dismiss()
+                Log.d(TAG, "Deleting account $account")
+            }
             .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-                viewModel.deleteAccount(account)
+                viewModel.deleteAccount(account, revoke = true)
                 dialog.dismiss()
                 Log.d(TAG, "Deleting account $account")
             }

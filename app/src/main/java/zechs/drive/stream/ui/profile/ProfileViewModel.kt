@@ -45,12 +45,18 @@ class ProfileViewModel @Inject constructor(
         sessionManager.saveDefault(account.name)
     }
 
-    fun deleteAccount(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteAccount(
+        account: AccountWithClient,
+        revoke: Boolean
+    ) = viewModelScope.launch(Dispatchers.IO) {
         if (account.isDefault) {
             sessionManager.saveDefault(null)
         }
         if (account.refreshToken == sessionManager.fetchRefreshToken()) {
-            revokeTokenApi.revokeToken(TokenRequestBody(account.refreshToken))
+            if (revoke) {
+                revokeTokenApi.revokeToken(TokenRequestBody(account.refreshToken))
+            }
+            Log.d(TAG, "${if (revoke) "" else "Not "}Revoking token")
             val default = sessionManager.fetchDefault()
             sessionManager.resetDataStore()
             if (default != null) {
