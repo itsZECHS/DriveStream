@@ -87,4 +87,7 @@
     <string name="confirm_delete_account_title">Are you certain you want to delete this account?</string>
     <string name="confirm_delete_account_warning">This action will revoke tokens and permanently delete all data associated with this account from the app.</string>
     <string name="just_delete">Just delete</string>
+    <string name="edit_nickname">Edit nickname</string>
+    <string name="update">Update</string>
+    <string name="nickname_cannot_be_empty">Nickname cannot be empty</string>
 </resources>
