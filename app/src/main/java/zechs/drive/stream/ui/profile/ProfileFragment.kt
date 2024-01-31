@@ -23,6 +23,8 @@ import zechs.drive.stream.data.model.AccountWithClient
 import zechs.drive.stream.databinding.FragmentProfileBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.add_account.DialogAddAccount
+import zechs.drive.stream.ui.edit_account.DialogEditAccount
+import zechs.drive.stream.ui.profile.ProfileViewModel.AccountUpdateState
 import zechs.drive.stream.ui.profile.ProfileViewModel.AccountValidationState
 import zechs.drive.stream.ui.profile.adapter.AccountsAdapter
 
@@ -57,6 +59,12 @@ class ProfileFragment : BaseFragment() {
                         handleSetDefault(account)
                         return@setOnMenuItemClickListener true
                     }
+
+                    R.id.action_rename -> {
+                        showEditDialog(account)
+                        return@setOnMenuItemClickListener true
+                    }
+
                     R.id.action_delete -> {
                         handleDeleteAccount(account)
                         return@setOnMenuItemClickListener true
@@ -65,6 +73,23 @@ class ProfileFragment : BaseFragment() {
                 return@setOnMenuItemClickListener false
             }
         }.also { it.show() }
+    }
+
+    private fun showEditDialog(account: AccountWithClient) {
+        val editDialog = DialogEditAccount(
+            requireContext(),
+            name = account.name,
+            onUpdateClickListener = { newName ->
+                viewModel.updateAccountName(account.name, newName)
+            }
+        )
+        editDialog.also {
+            it.show()
+            it.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+        }
     }
 
     private fun handleDeleteAccount(account: AccountWithClient) {
@@ -117,6 +142,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         newAccountObserver()
+        accountUpdateObserver()
         setupRecyclerView()
         setupAccountsObserver()
     }
@@ -162,6 +188,27 @@ class ProfileFragment : BaseFragment() {
 
                     is AccountValidationState.Valid -> {
                         // Navigate to next step with the nickname
+                    }
+                }
+            }
+        }
+    }
+
+    private fun accountUpdateObserver() {
+        viewModel.accountUpdate.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { validation ->
+                Log.d(TAG, "accountUpdateObserver: $validation")
+                when (validation) {
+                    AccountUpdateState.Conflict -> {
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.account_already_exists),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is AccountUpdateState.Updated -> {
+                        Log.d(TAG, "accountUpdateObserver: updated")
                     }
                 }
             }
