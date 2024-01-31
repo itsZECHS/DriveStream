@@ -88,4 +88,31 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    sealed interface AccountUpdateState {
+        object Conflict : AccountUpdateState
+        object Updated : AccountUpdateState
+    }
+
+    private val _accountUpdate = MutableLiveData<Event<AccountUpdateState>>()
+    val accountUpdate: LiveData<Event<AccountUpdateState>>
+        get() = _accountUpdate
+
+    fun updateAccountName(
+        oldName: String,
+        newName: String
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        val doesExist = accountsManager.getAccount(newName) != null
+        Log.d(TAG, "validateAccountName: $doesExist")
+        if (doesExist) {
+            _accountUpdate.postValue(Event(AccountUpdateState.Conflict))
+        } else {
+            val isDefault = sessionManager.fetchDefault() == oldName
+            if (isDefault) {
+                sessionManager.saveDefault(newName)
+            }
+            accountsManager.updateAccountName(oldName, newName)
+            _accountUpdate.postValue(Event(AccountUpdateState.Updated))
+        }
+    }
+
 }
