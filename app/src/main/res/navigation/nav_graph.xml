@@ -74,6 +74,19 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/profileFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_profileFragment_to_clientsFragment"
+            app:destination="@id/clientsFragment"
+            app:launchSingleTop="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientsFragment"
+        android:name="zechs.drive.stream.ui.clients.ClientsFragment"
+        android:label="ClientsFragment"
+        tools:layout="@layout/fragment_clients">
+        <argument
+            android:name="name"
+            app:argType="string" />
     </fragment>
 
 </navigation>
