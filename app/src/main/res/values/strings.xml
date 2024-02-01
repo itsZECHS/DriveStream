@@ -90,4 +90,5 @@
     <string name="edit_nickname">Edit nickname</string>
     <string name="update">Update</string>
     <string name="nickname_cannot_be_empty">Nickname cannot be empty</string>
+    <string name="add_new_client">Add new client</string>
 </resources>
