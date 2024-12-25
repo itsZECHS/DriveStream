@@ -27,6 +27,7 @@ import zechs.drive.stream.ui.edit_account.DialogEditAccount
 import zechs.drive.stream.ui.profile.ProfileViewModel.AccountUpdateState
 import zechs.drive.stream.ui.profile.ProfileViewModel.AccountValidationState
 import zechs.drive.stream.ui.profile.adapter.AccountsAdapter
+import zechs.drive.stream.utils.ext.navigateSafe
 
 
 class ProfileFragment : BaseFragment() {
@@ -188,10 +189,17 @@ class ProfileFragment : BaseFragment() {
 
                     is AccountValidationState.Valid -> {
                         // Navigate to next step with the nickname
+                        navigateToClients(validation.name)
                     }
                 }
             }
         }
+    }
+
+    private fun navigateToClients(nickname: String) {
+        val action = ProfileFragmentDirections.actionProfileFragmentToClientsFragment(nickname)
+        findNavController().navigateSafe(action)
+        Log.d(TAG, "navigateToClients(nickname=$nickname)")
     }
 
     private fun accountUpdateObserver() {
