@@ -23,22 +23,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/signInFragment"
-        android:name="zechs.drive.stream.ui.signin.SignInFragment"
-        android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in">
-        <action
-            android:id="@+id/action_signInFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right"
-            app:popUpTo="@id/signInFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-
-    <fragment
         android:id="@+id/homeFragment"
         android:name="zechs.drive.stream.ui.home.HomeFragment"
         android:label="fragment_home"
