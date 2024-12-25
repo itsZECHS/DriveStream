@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -95,6 +96,7 @@ class HomeFragment : BaseFragment() {
 
         setupToolbar()
         observeLogOutState()
+        observeAccountName()
     }
 
     private fun <T : MaterialButton> navigateToFiles(
@@ -140,8 +142,19 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun observeAccountName() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedAccount.collect { selectedAccount ->
+                    binding.tvAccountName.isGone = selectedAccount.isNullOrBlank()
+                    binding.tvAccountName.text = selectedAccount
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
     }
 

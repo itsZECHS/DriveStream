@@ -115,6 +115,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun handleSetDefault(account: AccountWithClient) {
         viewModel.markDefault(account)
+        viewModel.selectAccount(account)
         findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
     }
 

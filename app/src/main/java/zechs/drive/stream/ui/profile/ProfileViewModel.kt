@@ -36,6 +36,7 @@ class ProfileViewModel @Inject constructor(
         }
 
     fun selectAccount(account: AccountWithClient) = viewModelScope.launch(Dispatchers.IO) {
+        sessionManager.saveSelectedAccountName(account.name)
         sessionManager.saveClient(account.getDriveClient())
         sessionManager.saveRefreshToken(account.refreshToken)
         sessionManager.saveAccessToken(account.getAccessTokenResponse())
