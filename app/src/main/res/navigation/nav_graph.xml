@@ -68,9 +68,37 @@
         android:name="zechs.drive.stream.ui.clients.ClientsFragment"
         android:label="ClientsFragment"
         tools:layout="@layout/fragment_clients">
+        <action
+            android:id="@+id/action_clientsFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
         <argument
-            android:name="name"
+            android:name="nickname"
             app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="zechs.drive.stream.ui.login.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+        <argument
+            android:name="nickname"
+            app:argType="string" />
+        <argument
+            android:name="clientId"
+            app:argType="string" />
+        <argument
+            android:name="clientSecret"
+            app:argType="string" />
+        <argument
+            android:name="redirectUri"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_loginFragment_to_profileFragment"
+            app:destination="@id/profileFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

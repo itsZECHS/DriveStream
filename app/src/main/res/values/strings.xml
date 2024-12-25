@@ -98,4 +98,14 @@
     <string name="edit_client">Edit client</string>
     <string name="important_notice_client_id_warning">You cannot edit the client ID. Please create a new client, as editing the client ID will render any accounts using this client non-functional.</string>
     <string name="done">Done</string>
+    <string name="login_step1"><b>1.</b> Click \'Launch in browser.\'</string>
+    <string name="login_step2"><b>2.</b> Follow and complete the login process.</string>
+    <string name="login_step3"><b>3.</b> Once completed, you will be directed to a broken webpage.</string>
+    <string name="login_step4"><b>4.</b> Copy the entire URL and paste it below.</string>
+    <string name="login_step5"><b>5.</b> Click \'Login\'.</string>
+    <string name="login_to_your_account">Login to your Account</string>
+    <string name="launch_in_browser">Launch in browser</string>
+    <string name="login">Login</string>
+    <string name="empty_auth_url_message">Please follow the login steps and enter the authorization URL.</string>
+    <string name="client_id_used">Client ID: %1$s</string>
 </resources>
