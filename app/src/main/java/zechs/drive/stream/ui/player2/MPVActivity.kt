@@ -4,7 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.media.AudioManager
-import android.media.AudioManager.*
+import android.media.AudioManager.AUDIOFOCUS_GAIN
+import android.media.AudioManager.AUDIOFOCUS_LOSS
+import android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
+import android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
+import android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+import android.media.AudioManager.OnAudioFocusChangeListener
+import android.media.AudioManager.STREAM_MUSIC
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -198,6 +204,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
                     if (!wasPlayerPaused) player.paused = false
                 }
             }
+
             AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                 MPVLib.command(arrayOf("multiply", "volume", AUDIO_FOCUS_DUCKING.toString()))
                 audioFocusRestore = {
@@ -205,6 +212,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
                     MPVLib.command(arrayOf("multiply", "volume", inv.toString()))
                 }
             }
+
             AUDIOFOCUS_GAIN -> {
                 audioFocusRestore()
                 audioFocusRestore = {}
@@ -310,16 +318,24 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     private fun skipForward() {
         val currentPos = player.timePos ?: return
-        val newPos = currentPos + SKIP_DURATION
+        val totalDuration = player.duration ?: return
+        var newPos = currentPos + SKIP_DURATION
+        if (newPos > totalDuration) {
+            newPos = totalDuration
+        }
+        if (newPos == currentPos) return
         player.timePos = newPos
     }
 
     private fun rewindBackward() {
         val currentPos = player.timePos ?: return
-        val newPos = currentPos - SKIP_DURATION
+        var newPos = currentPos - SKIP_DURATION
+        if (newPos < 0) {
+            newPos = 0
+        }
+        if (newPos == currentPos) return
         player.timePos = newPos
     }
-
 
     data class TrackData(
         val track_id: Int,
@@ -463,6 +479,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
                     )
                 }
             }
+
             else -> {
                 controller.btnRotate.apply {
                     orientation = Orientation.LANDSCAPE
