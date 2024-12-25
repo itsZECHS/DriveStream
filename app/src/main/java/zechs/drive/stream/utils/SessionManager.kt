@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import zechs.drive.stream.data.local.AccountsDao
 import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.data.model.TokenResponse
@@ -24,6 +25,21 @@ class SessionManager @Inject constructor(
 ) {
 
     private val sessionStore = appContext.dataStore
+
+    suspend fun saveSelectedAccountName(nickname: String) {
+        val dataStoreKey = stringPreferencesKey(SELECTED_ACCOUNT)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = nickname
+        }
+        Log.d(TAG, "saveSelectedAccountName: $nickname")
+    }
+
+    fun flowSelectedAccountName() = sessionStore.data.map { preferences ->
+        val dataStoreKey = stringPreferencesKey(SELECTED_ACCOUNT)
+        val value = preferences[dataStoreKey]
+        Log.d(TAG, "fetchSelectedAccountName: $value")
+        value
+    }
 
     suspend fun saveClient(client: DriveClient) {
         val dataStoreKey = stringPreferencesKey(DRIVE_CLIENT)
@@ -83,10 +99,14 @@ class SessionManager @Inject constructor(
         return value
     }
 
-    suspend fun saveDefault(profile: String) {
+    suspend fun saveDefault(profile: String?) {
         val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
         sessionStore.edit { settings ->
-            settings[dataStoreKey] = profile
+            if (profile == null) {
+                settings.remove(dataStoreKey)
+            } else {
+                settings[dataStoreKey] = profile
+            }
         }
         Log.d(TAG, "saveDefault: $profile")
     }
@@ -112,6 +132,7 @@ class SessionManager @Inject constructor(
         const val ACCESS_TOKEN = "ACCESS_TOKEN"
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
         const val DEFAULT_PROFILE = "DEFAULT_PROFILE"
+        const val SELECTED_ACCOUNT = "SELECTED_ACCOUNT"
     }
 
 }

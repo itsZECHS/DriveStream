@@ -1,17 +1,22 @@
 package zechs.drive.stream.ui.home
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
@@ -91,6 +96,7 @@ class HomeFragment : BaseFragment() {
 
         setupToolbar()
         observeLogOutState()
+        observeAccountName()
     }
 
     private fun <T : MaterialButton> navigateToFiles(
@@ -109,18 +115,8 @@ class HomeFragment : BaseFragment() {
     private fun setupToolbar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_logOut -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.log_out_dialog_title))
-                        .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-                            dialog.dismiss()
-                            Log.d(TAG, "Logging out...")
-                            viewModel.logOut()
-                        }
-                        .show()
+                R.id.action_account_switch -> {
+                    findNavController().navigateSafe(R.id.action_homeFragment_to_profileFragment)
                     return@setOnMenuItemClickListener true
                 }
 
@@ -146,9 +142,44 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun observeAccountName() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedAccount.collect { selectedAccount ->
+                    binding.tvAccountName.isGone = selectedAccount.isNullOrBlank()
+                    binding.tvAccountName.text = selectedAccount
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
     }
 
+    private var backPressedOnce = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finish()
+                } else {
+                    backPressedOnce = true
+                    Toast.makeText(
+                        context,
+                        getString(R.string.press_back_again_to_exit),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        backPressedOnce = false
+                    }, 2000)
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 }

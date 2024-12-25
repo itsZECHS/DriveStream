@@ -5,13 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import zechs.drive.stream.R
-import zechs.drive.stream.data.model.Account
+import zechs.drive.stream.data.model.AccountWithClient
 import zechs.drive.stream.databinding.ItemTextBinding
 
 class AccountsAdapter(
-    val onClickListener: (Account) -> Unit,
-    val onMenuClickListener: (View, Account) -> Unit
-) : ListAdapter<Account, AccountsViewHolder>(AccountItemDiffCallback()) {
+    val onClickListener: (AccountWithClient) -> Unit,
+    val onMenuClickListener: (View, AccountWithClient) -> Unit
+) : ListAdapter<AccountWithClient, AccountsViewHolder>(AccountItemDiffCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -26,7 +26,6 @@ class AccountsAdapter(
     override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
         val item = getItem(position)
         return holder.bind(item)
-
     }
 
     override fun getItemViewType(
