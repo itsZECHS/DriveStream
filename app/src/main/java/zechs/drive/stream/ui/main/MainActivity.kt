@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -37,12 +38,11 @@ import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.databinding.ActivityMainBinding
 import zechs.drive.stream.utils.AdUnits
 import zechs.drive.stream.utils.AppTheme
-import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
 import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_CODE
 import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_ID
 import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_NAME
-import java.util.*
+import java.util.Random
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -115,18 +115,19 @@ class MainActivity : AppCompatActivity() {
     private fun redirectOnLogin() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.hasLoggedIn.collect { hasLoggedIn ->
-                    Log.d(TAG, "hasLoggedIn=${hasLoggedIn}")
-                    if (hasLoggedIn) handleLogin()
+                viewModel.hasDefault.collect { hasDefault ->
+                    Log.d(TAG, "hasDefault=${hasDefault}")
+                    if (hasDefault) handleDefault()
                 }
             }
         }
     }
 
-    private fun handleLogin() {
+    private fun handleDefault() {
         val currentFragment = navController.currentDestination?.id
-        if (currentFragment != null && currentFragment == R.id.signInFragment) {
-            navController.navigateSafe(R.id.action_signInFragment_to_homeFragment)
+        if (currentFragment != null && currentFragment == R.id.profileFragment && !viewModel.hasTransitionedToDefault) {
+            navController.navigate(R.id.action_profileFragment_to_homeFragment)
+            viewModel.hasTransitionedToDefault = true
         }
     }
 

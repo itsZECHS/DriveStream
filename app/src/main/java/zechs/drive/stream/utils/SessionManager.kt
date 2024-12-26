@@ -9,6 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import zechs.drive.stream.data.local.AccountsDao
 import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.data.model.TokenResponse
 import javax.inject.Inject
@@ -18,10 +20,26 @@ import javax.inject.Singleton
 @Singleton
 class SessionManager @Inject constructor(
     @ApplicationContext appContext: Context,
-    private val gson: Gson
+    private val gson: Gson,
+    private val accountsManager: AccountsDao,
 ) {
 
     private val sessionStore = appContext.dataStore
+
+    suspend fun saveSelectedAccountName(nickname: String) {
+        val dataStoreKey = stringPreferencesKey(SELECTED_ACCOUNT)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = nickname
+        }
+        Log.d(TAG, "saveSelectedAccountName: $nickname")
+    }
+
+    fun flowSelectedAccountName() = sessionStore.data.map { preferences ->
+        val dataStoreKey = stringPreferencesKey(SELECTED_ACCOUNT)
+        val value = preferences[dataStoreKey]
+        Log.d(TAG, "fetchSelectedAccountName: $value")
+        value
+    }
 
     suspend fun saveClient(client: DriveClient) {
         val dataStoreKey = stringPreferencesKey(DRIVE_CLIENT)
@@ -45,12 +63,10 @@ class SessionManager @Inject constructor(
 
     suspend fun saveAccessToken(data: TokenResponse) {
         val dataStoreKey = stringPreferencesKey(ACCESS_TOKEN)
-        val currentTimeInSeconds = System.currentTimeMillis() / 1000
-        val newData = data.copy(
-            expiresIn = currentTimeInSeconds + data.expiresIn
-        )
+        val refreshToken = fetchRefreshToken()!!
+        accountsManager.updateAccessToken(refreshToken, gson.toJson(data))
         sessionStore.edit { settings ->
-            settings[dataStoreKey] = gson.toJson(newData)
+            settings[dataStoreKey] = gson.toJson(data)
         }
         Log.d(TAG, "saveAccessToken: $data")
     }
@@ -83,6 +99,26 @@ class SessionManager @Inject constructor(
         return value
     }
 
+    suspend fun saveDefault(profile: String?) {
+        val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
+        sessionStore.edit { settings ->
+            if (profile == null) {
+                settings.remove(dataStoreKey)
+            } else {
+                settings[dataStoreKey] = profile
+            }
+        }
+        Log.d(TAG, "saveDefault: $profile")
+    }
+
+    suspend fun fetchDefault(): String? {
+        val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
+        val preferences = sessionStore.data.first()
+        val value = preferences[dataStoreKey]
+        Log.d(TAG, "fetchDefault: $value")
+        return value
+    }
+
     suspend fun resetDataStore() {
         sessionStore.edit { it.clear() }
     }
@@ -95,6 +131,8 @@ class SessionManager @Inject constructor(
         const val DRIVE_CLIENT = "DRIVE_CLIENT"
         const val ACCESS_TOKEN = "ACCESS_TOKEN"
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
+        const val DEFAULT_PROFILE = "DEFAULT_PROFILE"
+        const val SELECTED_ACCOUNT = "SELECTED_ACCOUNT"
     }
 
 }

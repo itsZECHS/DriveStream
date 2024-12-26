@@ -22,4 +22,10 @@ data class DriveClient(
     } catch (e: Exception) {
         null
     }
+
+    fun getClient() = Client(
+        id = clientId,
+        secret = clientSecret,
+        redirectUri = redirectUri
+    )
 }

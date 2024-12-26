@@ -5,16 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import zechs.drive.stream.data.local.AccountsDao
 import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.data.repository.GithubRepository
 import zechs.drive.stream.utils.AppSettings
 import zechs.drive.stream.utils.AppTheme
+import zechs.drive.stream.utils.FirstRunProfileMigrator
 import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.VideoPlayer
 import zechs.drive.stream.utils.state.Resource
@@ -24,14 +27,16 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val sessionManager: SessionManager,
     private val githubRepository: GithubRepository,
-    private val appSettings: AppSettings
+    private val appSettings: AppSettings,
+    private val firstRunProfileMigrator: FirstRunProfileMigrator,
+    private val accountsManager: AccountsDao
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _hasLoggedIn = MutableStateFlow(false)
-    val hasLoggedIn = _hasLoggedIn.asStateFlow()
+    private val _hasDefault = MutableStateFlow(false)
+    val hasDefault = _hasDefault.asStateFlow()
 
     private val _latest = MutableLiveData<Resource<LatestRelease>>()
     val latest: LiveData<Resource<LatestRelease>>
@@ -55,29 +60,33 @@ class MainViewModel @Inject constructor(
     var adsEnabled = false
         private set
 
+    var hasTransitionedToDefault = false
+
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            firstRunProfileMigrator.migrateSessionToAccountsTable()
             getTheme()
             getEnableAds()
-            val status = getLoginStatus()
-            if (status) {
-                getPlayer()
-                getLastUpdated()
-            }
-            _hasLoggedIn.value = status
+            getDefaultAccount()
+            getPlayer()
+            getLastUpdated()
             delay(250L)
             _isLoading.value = false
         }
         getLatestRelease() // check for update
     }
 
-    private suspend fun getLoginStatus(): Boolean {
-        sessionManager.fetchClient() ?: return false
-        sessionManager.fetchRefreshToken() ?: return false
-        return true
+    private suspend fun getDefaultAccount() {
+        val default = sessionManager.fetchDefault() ?: return
+        accountsManager.getAccount(default)?.let { account ->
+            sessionManager.saveClient(account.getDriveClient())
+            sessionManager.saveRefreshToken(account.refreshToken)
+            sessionManager.saveAccessToken(account.getAccessTokenResponse())
+            _hasDefault.value = true
+        }
     }
 
-    fun getLatestRelease() = viewModelScope.launch {
+    fun getLatestRelease() = viewModelScope.launch(Dispatchers.IO) {
         _latest.postValue(Resource.Loading())
         isChecking = true
         _latest.postValue(githubRepository.getLatestRelease())

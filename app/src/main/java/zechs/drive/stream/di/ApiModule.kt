@@ -15,6 +15,7 @@ import zechs.drive.stream.BuildConfig
 import zechs.drive.stream.data.model.StarredAdapter
 import zechs.drive.stream.data.remote.DriveApi
 import zechs.drive.stream.data.remote.GithubApi
+import zechs.drive.stream.data.remote.RevokeTokenApi
 import zechs.drive.stream.data.remote.TokenApi
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.data.repository.GithubRepository
@@ -23,6 +24,7 @@ import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.util.Constants.Companion.GITHUB_API
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_ACCOUNTS_URL
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_API
+import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_OAUTH_URL
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -131,6 +133,21 @@ object ApiModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(GithubApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRevokeTokenApi(
+        @Named("OkHttpClient")
+        client: OkHttpClient,
+        moshi: Moshi
+    ): RevokeTokenApi {
+        return Retrofit.Builder()
+            .baseUrl(GOOGLE_OAUTH_URL)
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(RevokeTokenApi::class.java)
     }
 
     @Provides
