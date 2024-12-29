@@ -17,17 +17,33 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.*
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
-import com.google.android.exoplayer2.ExoPlaybackException.*
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.ExoPlaybackException.TYPE_REMOTE
+import com.google.android.exoplayer2.ExoPlaybackException.TYPE_RENDERER
+import com.google.android.exoplayer2.ExoPlaybackException.TYPE_SOURCE
+import com.google.android.exoplayer2.ExoPlaybackException.TYPE_UNEXPECTED
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Format.NO_VALUE
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.PlaybackParameters
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Tracks
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
@@ -60,11 +76,11 @@ import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.drive.stream.utils.util.Orientation
 import zechs.drive.stream.utils.util.getNextOrientation
 import zechs.drive.stream.utils.util.setOrientation
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
-
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class PlayerActivity : AppCompatActivity() {
 
@@ -89,7 +105,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var dataSourceFactory: DataSource.Factory
     private lateinit var trackSelector: DefaultTrackSelector
 
-    @Suppress("DEPRECATION")
     private lateinit var playerView: PlayerView
 
     // Player views
@@ -496,6 +511,7 @@ class PlayerActivity : AppCompatActivity() {
                     )
                 }
             }
+
             else -> {
                 btnRotate.apply {
                     orientation = Orientation.LANDSCAPE

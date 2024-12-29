@@ -23,7 +23,7 @@ class ModuleGlide : AppGlideModule() {
             .connectTimeout(60, TimeUnit.SECONDS)
             .build()
 
-        glide.registry.replace(
+        registry.replace(
             /* Class<Model> */ GlideUrl::class.java,
             /* Class<Data> */ InputStream::class.java,
             /* ModelLoaderFactory */ OkHttpUrlLoader.Factory(client)
