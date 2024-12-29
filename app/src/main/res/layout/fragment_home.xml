@@ -68,6 +68,29 @@
             app:icon="@drawable/ic_settings_24" />
 
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvAccountName"
+        style="?attr/textAppearanceOverline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:background="?attr/colorSurfaceContainer"
+        android:clickable="false"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurface"
+        android:textIsSelectable="false"
+        android:textStyle="bold"
+        app:textAllCaps="true"
+        tools:text="Account Name" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

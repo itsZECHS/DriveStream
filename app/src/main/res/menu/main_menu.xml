@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_logOut"
-        android:icon="@drawable/ic_logout_24"
-        android:title="@string/logout"
+        android:id="@+id/action_account_switch"
+        android:icon="@drawable/ic_profiles_24"
+        android:title="@string/switch_account"
         app:showAsAction="ifRoom" />
 
 </menu>

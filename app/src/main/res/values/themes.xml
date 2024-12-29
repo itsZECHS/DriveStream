@@ -10,6 +10,16 @@
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/fadedColor</item>
         <item name="android:navigationBarColor">@color/fadedColor</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Fade.MaterialAlertDialog</item>
+    </style>
+
+    <style name="ThemeOverlay.Fade.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowAnimationStyle">@style/Animation.Fade.AlertDialog</item>
+    </style>
+
+    <style name="Animation.Fade.AlertDialog" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/dialog_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/dialog_exit_anim</item>
     </style>
 
     <style name="Theme.Fullscreen" parent="Theme.Material3.Dark.NoActionBar">

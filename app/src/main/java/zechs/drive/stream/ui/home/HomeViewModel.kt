@@ -25,4 +25,5 @@ class HomeViewModel @Inject constructor(
         _hasLoggedOut.value = true
     }
 
+    val selectedAccount = sessionManager.get().flowSelectedAccountName()
 }
