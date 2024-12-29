@@ -576,6 +576,11 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         runOnUiThread { eventPropertyUi(property) }
     }
 
+    override fun eventProperty(property: String, value: Double) {
+        if (!activityIsForeground) return
+        runOnUiThread { eventPropertyUi(property) }
+    }
+
     private fun eventPropertyUi(property: String) {
         if (activityIsForeground && property == "track-list") {
             player.loadTracks()

@@ -14,9 +14,6 @@ import java.util.List;
 // Wrapper for native library
 public class MPVLib {
 
-    private static final List<EventObserver> observers = new ArrayList<>();
-    private static final List<LogObserver> log_observers = new ArrayList<>();
-
     static {
         String[] libs = {"mpv", "player"};
         for (String lib : libs) {
@@ -58,6 +55,8 @@ public class MPVLib {
 
     public static native void observeProperty(@NonNull String property, int format);
 
+    private static final List<EventObserver> observers = new ArrayList<>();
+
     public static void addObserver(EventObserver o) {
         synchronized (observers) {
             observers.add(o);
@@ -84,6 +83,13 @@ public class MPVLib {
         }
     }
 
+    public static void eventProperty(String property, double value) {
+        synchronized (observers) {
+            for (EventObserver o : observers)
+                o.eventProperty(property, value);
+        }
+    }
+
     public static void eventProperty(String property, String value) {
         synchronized (observers) {
             for (EventObserver o : observers)
@@ -104,6 +110,8 @@ public class MPVLib {
                 o.event(eventId);
         }
     }
+
+    private static final List<LogObserver> log_observers = new ArrayList<>();
 
     public static void addLogObserver(LogObserver o) {
         synchronized (log_observers) {
@@ -132,6 +140,8 @@ public class MPVLib {
         void eventProperty(@NonNull String property, boolean value);
 
         void eventProperty(@NonNull String property, @NonNull String value);
+
+        void eventProperty(@NonNull String property, double value);
 
         void event(int eventId);
     }
@@ -163,10 +173,8 @@ public class MPVLib {
         public static final int MPV_EVENT_START_FILE = 6;
         public static final int MPV_EVENT_END_FILE = 7;
         public static final int MPV_EVENT_FILE_LOADED = 8;
-        public static final @Deprecated
-        int MPV_EVENT_IDLE = 11;
-        public static final @Deprecated
-        int MPV_EVENT_TICK = 14;
+        public static final @Deprecated int MPV_EVENT_IDLE = 11;
+        public static final @Deprecated int MPV_EVENT_TICK = 14;
         public static final int MPV_EVENT_CLIENT_MESSAGE = 16;
         public static final int MPV_EVENT_VIDEO_RECONFIG = 17;
         public static final int MPV_EVENT_AUDIO_RECONFIG = 18;
