@@ -10,8 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io")
     }
 }
 rootProject.name = "Drive Stream"
-include ':app'
-include ':mpv'
+include(":app")
+include(":mpv")
