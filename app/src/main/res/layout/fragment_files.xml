@@ -19,7 +19,8 @@
             app:navigationIcon="@drawable/ic_back_24"
             app:navigationIconTint="@color/textColor"
             app:titleTextAppearance="@style/titleTextAppearance"
-            app:titleTextColor="@color/textColor_87" />
+            app:titleTextColor="@color/textColor_87"
+            tools:title="Files" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -27,7 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        tools:listitem="@layout/item_drive_file" />
 
     <ProgressBar
         android:id="@+id/loading"

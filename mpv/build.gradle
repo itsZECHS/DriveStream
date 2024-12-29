@@ -6,11 +6,11 @@ plugins {
 android {
     namespace "zechs.mpv"
 
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdk 21
-        targetSdk 34
+        targetSdk 35
     }
 
     compileOptions {
@@ -31,5 +31,5 @@ android {
 }
 
 dependencies {
-    implementation "androidx.annotation:annotation:1.7.1"
+    implementation "androidx.annotation:annotation:1.9.1"
 }
